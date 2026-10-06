@@ -4,7 +4,7 @@ const store = {
   set(key, value) { localStorage.setItem(`meteomix:${key}`, JSON.stringify(value)); }
 };
 const state = {
-  place: store.get('place', {name:'Roma', admin1:'Lazio', country:'Italia', latitude:41.9028, longitude:12.4964, timezone:'Europe/Rome'}),
+  place: store.get('place', {name:'Tolentino', admin1:'Marche', country:'Italia', latitude:43.2, longitude:13.2833, timezone:'Europe/Rome'}),
   mode: store.get('mode','mix'), models: store.get('models',['bestmatch','ecmwf','icon','meteofrance','italiameteo']), data:{}, errors:{}, days:5, searchTimer:null
 };
 const providerNames={bestmatch:'Best Match',ecmwf:'ECMWF IFS',icon:'DWD ICON',meteofrance:'Météo-France',italiameteo:'ItaliaMeteo ARPAE'};
