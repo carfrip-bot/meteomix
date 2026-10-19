@@ -50,10 +50,11 @@ async function fetchEnsemble(place,config){
  const daily=Object.entries(dayIndexes).map(([date,indexes])=>{
   const memberStats=temps.map((series,member)=>{
    const t=indexes.map(i=>fnum(series[i])).filter(Number.isFinite),p=(precips[member]||[]);const rain=indexes.map(i=>fnum(p[i])).filter(Number.isFinite);
-   return {min:t.length?Math.min(...t):null,max:t.length?Math.max(...t):null,rain:rain.reduce((a,b)=>a+b,0),codes:indexes.map(i=>fnum(codes[member]?.[i])).filter(Number.isFinite)};
+   const dailyCode=modeOf(indexes.map(i=>fnum(codes[member]?.[i])).filter(Number.isFinite));
+   return {min:t.length?Math.min(...t):null,max:t.length?Math.max(...t):null,rain:rain.reduce((a,b)=>a+b,0),code:dailyCode};
   });
-  const mins=memberStats.map(x=>x.min).filter(Number.isFinite),maxs=memberStats.map(x=>x.max).filter(Number.isFinite),rainTotals=memberStats.map(x=>x.rain),allCodes=memberStats.flatMap(x=>x.codes);
-  return {date,min:mean(mins),minLow:percentile(mins,.1),minHigh:percentile(mins,.9),max:mean(maxs),maxLow:percentile(maxs,.1),maxHigh:percentile(maxs,.9),rain:rainTotals.length?100*rainTotals.filter(v=>v>.1).length/rainTotals.length:null,rainMm:mean(rainTotals),code:modeOf(allCodes)};
+  const mins=memberStats.map(x=>x.min).filter(Number.isFinite),maxs=memberStats.map(x=>x.max).filter(Number.isFinite),rainTotals=memberStats.map(x=>x.rain);
+  return {date,min:mean(mins),minLow:percentile(mins,.1),minHigh:percentile(mins,.9),max:mean(maxs),maxLow:percentile(maxs,.1),maxHigh:percentile(maxs,.9),rain:rainTotals.length?100*rainTotals.filter(v=>v>.1).length/rainTotals.length:null,rainMm:mean(rainTotals),code:modeOf(memberStats.map(x=>x.code))};
  });
  return {provider:config.id,label:config.label,stamp:h.time[0],current:{},hourly,daily};
 }
@@ -75,7 +76,10 @@ function blendForecast(sources,ensembles=[]){
   const records=available.map(s=>s.daily.find(x=>x.date===date)).filter(Boolean);
   const mins=records.map(x=>x.min).filter(Number.isFinite),maxs=records.map(x=>x.max).filter(Number.isFinite);
   const minLow=percentile(records.map(x=>x.minLow??x.min),.1),minHigh=percentile(records.map(x=>x.minHigh??x.min),.9),maxLow=percentile(records.map(x=>x.maxLow??x.max),.1),maxHigh=percentile(records.map(x=>x.maxHigh??x.max),.9);
-  return {date,min:median(mins),max:median(maxs),minLow,minHigh,maxLow,maxHigh,spread:Number.isFinite(maxLow)&&Number.isFinite(maxHigh)?(maxHigh-maxLow)/2:null,rain:median(records.map(x=>x.rain)),rainMm:median(records.map(x=>x.rainMm)),code:modeOf(records.map(x=>x.code)),ensemble:useLong&&ensembles.length>0};
+  const rain=median(records.map(x=>x.rain));
+  let code=modeOf(records.map(x=>x.code));
+  if(Number.isFinite(rain)&&Number.isFinite(code)&&code<=3){if(rain>=50)code=80;else if(rain>=35)code=3;}
+  return {date,min:median(mins),max:median(maxs),minLow,minHigh,maxLow,maxHigh,spread:Number.isFinite(maxLow)&&Number.isFinite(maxHigh)?(maxHigh-maxLow)/2:null,rain,rainMm:median(records.map(x=>x.rainMm)),code,ensemble:useLong&&ensembles.length>0};
  }).filter(x=>Number.isFinite(x.min)||Number.isFinite(x.max));
  const desc=meteoDescription(Math.round(current.code));return {provider:'mix',stamp:new Date().toISOString(),current:{...current,desc:desc.text,icon:desc.icon},hourly,daily};
 }
