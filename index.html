@@ -79,7 +79,7 @@
         <article class="card hourly-card">
           <div class="card-heading"><div><p class="card-kicker">PROSSIME ORE</p><h3>Andamento della giornata</h3></div><span class="chart-unit">Temperatura <b>°C</b></span></div>
           <div class="chart-wrap"><div class="chart-y-labels"><span id="y-top">—°</span><span id="y-mid">—°</span><span id="y-bottom">—°</span></div><div class="chart-area"><svg id="temp-chart" viewBox="0 0 720 180" preserveAspectRatio="none" role="img" aria-label="Grafico temperatura per le prossime ore"><defs><linearGradient id="chart-fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ef9d43" stop-opacity=".23"/><stop offset="1" stop-color="#ef9d43" stop-opacity="0"/></linearGradient></defs><path id="chart-area-fill" d="" fill="url(#chart-fill)"/><path id="chart-line" d="" fill="none" stroke="#e89a42" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><g id="chart-points"></g></svg><div class="chart-times" id="chart-times"></div></div></div>
-          <div class="chart-source-note" id="chart-note">Le linee Mix mostrano la media delle fonti attive.</div>
+          <div class="chart-source-note" id="chart-note">Mix combina modelli distinti e mostra l’incertezza degli ensemble.</div>
         </article>
 
         <article class="card week-card">
@@ -91,7 +91,7 @@
       <section class="sources-section">
         <div class="sources-title"><div><p class="card-kicker">TRASPARENZA PRIMA DI TUTTO</p><h3 id="sources-heading">Le fonti del Mix</h3></div><span class="source-count" id="source-count">0 fonti</span></div>
         <div class="source-cards" id="source-cards"></div>
-        <p class="mix-explainer" id="mix-explainer"><span>✳</span> Mix confronta modelli previsionali nazionali senza chiavi API. Una fonte non disponibile per la località viene esclusa; lo stato resta visibile qui.</p>
+        <p class="mix-explainer" id="mix-explainer"><span>✳</span> Prime 72 ore: mediana dei modelli disponibili. Giorni 4–7: ensemble ECMWF, DWD e NOAA; la fascia d’incertezza mostra quanto divergono gli scenari. Best Match resta selezionabile a parte per evitare di contare due volte modelli già inclusi. Fonti non disponibili vengono escluse e segnalate.</p>
       </section>
       <footer><span>© 2026 MeteoMix</span><span>Le previsioni sono stime: per allerte e decisioni di sicurezza consulta le autorità locali.</span><button id="privacy-open">Privacy e fonti</button></footer>
     </main>
@@ -100,19 +100,18 @@
   <dialog id="settings-dialog" class="modal">
     <form method="dialog" class="modal-panel" id="settings-form">
       <div class="modal-heading"><div><p class="card-kicker">PERSONALIZZA LE FONTI</p><h2>Fonti incluse nel Mix</h2></div><button class="close-button" value="cancel" aria-label="Chiudi">×</button></div>
-      <p class="modal-intro">Scegli i modelli da confrontare. Non serve registrarsi né inserire chiavi API; per una località possono essere disponibili modelli diversi.</p>
+      <p class="modal-intro">Scegli le fonti deterministiche per le prime 72 ore del Mix. Dal quarto giorno il Mix usa gli ensemble ECMWF, DWD e NOAA per rappresentare l’incertezza. Best Match resta disponibile come modalità autonoma.</p>
       <div class="model-options">
-        <label><input type="checkbox" name="model" value="bestmatch"><span><strong>Best Match</strong><small>Selezione automatica del modello più adatto</small></span></label>
         <label><input type="checkbox" name="model" value="ecmwf"><span><strong>ECMWF IFS</strong><small>Centro europeo per le previsioni meteorologiche</small></span></label>
         <label><input type="checkbox" name="model" value="icon"><span><strong>DWD ICON</strong><small>Servizio meteorologico tedesco</small></span></label>
         <label><input type="checkbox" name="model" value="meteofrance"><span><strong>Météo-France</strong><small>ARPEGE, con alta risoluzione dove disponibile</small></span></label>
         <label><input type="checkbox" name="model" value="italiameteo"><span><strong>ItaliaMeteo · ARPAE ICON 2I</strong><small>Modello ad alta risoluzione per l’Italia</small></span></label>
       </div>
-      <div class="setting-footnote">I modelli sono distribuiti tramite Open-Meteo. Le richieste standard non richiedono API key; si applicano i limiti e le condizioni del servizio.</div>
+      <div class="setting-footnote">I dati provengono da Open-Meteo e non richiedono chiavi API. Una mediana multi-modello non garantisce accuratezza superiore; la fascia ensemble esprime dispersione, non una probabilità calibrata per ogni località.</div>
       <div class="modal-actions"><span></span><button class="primary-button" value="save" id="save-settings">Salva selezione</button></div>
     </form>
   </dialog>
-  <dialog id="privacy-dialog" class="modal"><form method="dialog" class="modal-panel"><div class="modal-heading"><div><p class="card-kicker">INFORMAZIONI</p><h2>Fonti e privacy</h2></div><button class="close-button" value="cancel" aria-label="Chiudi">×</button></div><p>La località e la selezione dei modelli sono salvate nel localStorage del browser. Le richieste meteo vengono inviate a Open-Meteo, che distribuisce le previsioni dei servizi meteorologici nazionali.</p><ul class="privacy-list"><li><a href="https://open-meteo.com/en/docs" target="_blank" rel="noreferrer">Open-Meteo Forecast API</a> — confronta modelli distinti e combina automaticamente fonti nazionali.</li><li><a href="https://open-meteo.com/en/docs/meteofrance-api" target="_blank" rel="noreferrer">Météo-France</a> — modelli ARPEGE e AROME.</li><li><a href="https://open-meteo.com/en/docs/model-updates" target="_blank" rel="noreferrer">Modelli e aggiornamenti</a> — include ECMWF, DWD e ItaliaMeteo/ARPAE.</li></ul><p class="modal-intro">Mix è una media aritmetica dei valori disponibili, non una previsione ufficiale né una garanzia di accuratezza superiore. Se un modello non copre l’area o non risponde, viene escluso e segnalato.</p><div class="modal-actions"><button class="primary-button" value="cancel">Ho capito</button></div></form></dialog>
+  <dialog id="privacy-dialog" class="modal"><form method="dialog" class="modal-panel"><div class="modal-heading"><div><p class="card-kicker">INFORMAZIONI</p><h2>Fonti e privacy</h2></div><button class="close-button" value="cancel" aria-label="Chiudi">×</button></div><p>La località e la selezione dei modelli sono salvate nel localStorage del browser. Le richieste meteo vengono inviate a Open-Meteo, che distribuisce le previsioni dei servizi meteorologici nazionali.</p><ul class="privacy-list"><li><a href="https://open-meteo.com/en/docs" target="_blank" rel="noreferrer">Open-Meteo Forecast API</a> — modelli deterministici ECMWF, DWD, Météo-France e ItaliaMeteo/ARPAE.</li><li><a href="https://open-meteo.com/en/docs/ensemble-api" target="_blank" rel="noreferrer">Open-Meteo Ensemble API</a> — scenari ECMWF IFS, DWD ICON EPS e NOAA GEFS.</li><li><a href="https://www.arpae.it/it/temi-ambientali/meteo/previsioni-meteo/previsioni-meteo-modellistiche" target="_blank" rel="noreferrer">ARPAE · ICON-2I</a> — modello ad area limitata per l’Italia.</li></ul><p class="modal-intro">La mediana dei modelli e la dispersione degli ensemble sono indicazioni di supporto, non una previsione ufficiale né una garanzia di accuratezza superiore. Per allerte e decisioni di sicurezza consulta le autorità locali.</p><div class="modal-actions"><button class="primary-button" value="cancel">Ho capito</button></div></form></dialog>
   <script src="app.js"></script>
 </body>
 </html>
